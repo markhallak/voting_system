@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite/dist/flowbite.min.css" rel="stylesheet">
+    <link href="{% static 'css/login.css'%}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col md:flex-row">
+
+<!-- Left Side -->
+<div class="w-full md:w-3/5 login-image desktop-login-image bg-cover bg-no-repeat bg-center md:h-screen">
+    <div class="overlay-text">A new way to vote in your community</div>
+    <div class="card-footer hidden md:flex">
+        <span class="md:text-white text-black ml-4">You don't have an account?</span>
+        <a href="signup" class="bg-purple-600 text-white py-2 px-4 rounded-lg mr-4">Sign up</a>
+    </div>
+</div>
+
+<!-- Right Side -->
+<div class="w-full md:w-2/5 flex flex-col justify-center items-center p-4">
+    <div class="max-w-xs w-full text-center">
+        <h2 class="text-2xl font-bold mb-8 md:mb-8">Sign In to your Account</h2>
+        <div class="flex flex-col justify-center space-y-4 mt-3">
+            <div class="flex">
+  <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+<svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+     fill="currentColor" viewBox="0 0 20 16">
+        <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z"/>
+        <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z"/>
+    </svg>  </span>
+                <input type="text" id="email-input"
+                       class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Email">
+            </div>
+            <input type="hidden" class="csrfToken" value="{{ csrf_token }}">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" type="checkbox"
+                           class="w-4 h-4 text-blue-600 bg-gray-200 border-gray-300 rounded dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="remember-me" class="ml-2 block text-sm leading-5 text-gray-900">Remember me</label>
+                </div>
+            </div>
+            <button id="signin-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg">Sign In</button>
+        </div>
+    </div>
+    <div class="text-center pt-8 pb-12 md:hidden">
+        <span class="text-black">You don't have an account?</span>
+        <a href="/signup" class="text-blue-600 underline">Sign up</a>
+    </div>
+</div>
+
+<div id="toast-top-right"
+     class="hidden fixed top-4 right-4 flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow dark:text-gray-400 dark:divide-gray-700 dark:bg-gray-800"
+     role="alert">
+    <svg class="w-5 h-5 text-blue-600 dark:text-blue-500 rotate-45" aria-hidden="true"
+         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
+    </svg>
+    <div class="ps-4 text-sm font-normal">Magic link sent successfully.</div>
+</div>
+
+<script>
+
+</script>
+
+<script type="module" src="{% static 'js/login.js'%}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flowbite/dist/flowbite.min.js"></script>
+</body>
+</html>
+
+
