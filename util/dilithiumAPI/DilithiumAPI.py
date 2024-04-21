@@ -3,6 +3,7 @@ import jpype
 
 class DilithiumAPI:
     MyClass = None
+
     def __init__(self):
         jvmPath = jpype.getDefaultJVMPath()
         jpype.startJVM(jvmPath)
@@ -15,10 +16,18 @@ class DilithiumAPI:
 
         self.MyClass = jpype.JClass("DilithiumSignature")
 
-    print(MyClass.getPublicKey())
-    print(MyClass.getPrivateKey())
+    def getPublicKey(self):
+        return self.MyClass.getPublicKey()
+
+    def getPrivateKey(self):
+        return self.MyClass.getPrivateKey()
+
+    def shutDown(self):
+        jpype.shutdownJVM()
+
+    def sign(self, content):
+        return self.MyClass.sign(content)
 
     # myVar = MyClass.verify("Jo!".encode(), MyClass.sign("Jo!".encode()))
     # print(myVar)
 
-    jpype.shutdownJVM()
