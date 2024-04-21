@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+{%load static%}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet"/>
+    <title>{% block title %}Site Name{% endblock %}</title>
+</head>
+<body>
+
+
+<nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <div class="px-3 py-3 lg:px-5 lg:pl-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center justify-start rtl:justify-end">
+                <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"
+                        type="button"
+                        class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd" fill-rule="evenodd"
+                              d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+                    </svg>
+                </button>
+                <a href="{% url 'home' %}" class="flex ms-2 md:me-24">
+                    <img height="40" width="40"
+                         src="data:image/png;base64,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">
+                    <span class="self-center text-xl ml-3 font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Safivote</span>
+                </a>
+            </div>
+            <div class="flex items-center">
+                <div class="flex items-center ms-3">
+                    <div>
+                        <button type="button"
+                                class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                                aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                            <span class="sr-only">Open user menu</span>
+                            <img class="w-8 h-8 rounded-full"
+                                 src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
+                        </button>
+                    </div>
+                    <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+                         id="dropdown-user">
+                        <div class="px-4 py-3" role="none">
+                            <p class="text-sm text-gray-900 dark:text-white" role="none">
+                                Neil Sims
+                            </p>
+                            <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                                neil.sims@flowbite.com
+                            </p>
+                        </div>
+                        <ul class="py-1" role="none">
+                            <li>
+                                <a href="#"
+                                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                   role="menuitem">
+                                    <div class="group ml-1">
+                                        <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                             viewBox="0 0 22 21">
+                                            <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
+                                            <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="ms-3">Dashboard</span></a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                   role="menuitem">
+                                    <div class="group ml-1">
+                                        <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                             xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50"
+                                             viewBox="0,0,256,256"
+                                             fill="currentColor">
+                                            <g transform="scale(5.12, 5.12)">
+                                                <path d="M47.16,21.221l-5.91,-0.966c-0.346,-1.186 -0.819,-2.326 -1.411,-3.405l3.45,-4.917c0.279,-0.397 0.231,-0.938 -0.112,-1.282l-3.889,-3.887c-0.347,-0.346 -0.893,-0.391 -1.291,-0.104l-4.843,3.481c-1.089,-0.602 -2.239,-1.08 -3.432,-1.427l-1.031,-5.886c-0.084,-0.478 -0.499,-0.828 -0.985,-0.828h-5.5c-0.49,0 -0.908,0.355 -0.987,0.839l-0.956,5.854c-1.2,0.345 -2.352,0.818 -3.437,1.412l-4.83,-3.45c-0.399,-0.285 -0.942,-0.239 -1.289,0.106l-3.887,3.887c-0.343,0.343 -0.391,0.883 -0.112,1.28l3.399,4.863c-0.605,1.095 -1.087,2.254 -1.438,3.46l-5.831,0.971c-0.482,0.08 -0.836,0.498 -0.836,0.986v5.5c0,0.485 0.348,0.9 0.825,0.985l5.831,1.034c0.349,1.203 0.831,2.362 1.438,3.46l-3.441,4.813c-0.284,0.397 -0.239,0.942 0.106,1.289l3.888,3.891c0.343,0.343 0.884,0.391 1.281,0.112l4.87,-3.411c1.093,0.601 2.248,1.078 3.445,1.424l0.976,5.861c0.079,0.481 0.496,0.834 0.985,0.834h5.5c0.485,0 0.9,-0.348 0.984,-0.825l1.045,-5.89c1.199,-0.353 2.348,-0.833 3.43,-1.435l4.905,3.441c0.398,0.281 0.938,0.232 1.282,-0.111l3.888,-3.891c0.346,-0.347 0.391,-0.894 0.104,-1.292l-3.498,-4.857c0.593,-1.08 1.064,-2.222 1.407,-3.408l5.918,-1.039c0.479,-0.084 0.827,-0.5 0.827,-0.985v-5.5c0.001,-0.49 -0.354,-0.908 -0.838,-0.987zM25,32c-3.866,0 -7,-3.134 -7,-7c0,-3.866 3.134,-7 7,-7c3.866,0 7,3.134 7,7c0,3.866 -3.134,7 -7,7z"></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <span class="ms-3">Settings</span></a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                                   role="menuitem">
+                                    <div class="group ml-1">
+                                        <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                             xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                             viewBox="0 0 24 24"
+                                             width="24" height="24">
+                                            <path d="M9 20.7499H6C5.65324 20.7647 5.30697 20.7109 4.98101 20.5917C4.65505 20.4725 4.3558 20.2902 4.10038 20.0552C3.84495 19.8202 3.63837 19.5371 3.49246 19.2222C3.34654 18.9073 3.26415 18.5667 3.25 18.2199V5.77994C3.26415 5.43316 3.34654 5.09256 3.49246 4.77765C3.63837 4.46274 3.84495 4.17969 4.10038 3.9447C4.3558 3.70971 4.65505 3.52739 4.98101 3.40818C5.30697 3.28896 5.65324 3.23519 6 3.24994H9C9.19891 3.24994 9.38968 3.32896 9.53033 3.46961C9.67098 3.61027 9.75 3.80103 9.75 3.99994C9.75 4.19886 9.67098 4.38962 9.53033 4.53027C9.38968 4.67093 9.19891 4.74994 9 4.74994H6C5.70307 4.72412 5.4076 4.81359 5.17487 4.99977C4.94213 5.18596 4.78999 5.45459 4.75 5.74994V18.2199C4.78999 18.5153 4.94213 18.7839 5.17487 18.9701C5.4076 19.1563 5.70307 19.2458 6 19.2199H9C9.19891 19.2199 9.38968 19.299 9.53033 19.4396C9.67098 19.5803 9.75 19.771 9.75 19.9699C9.75 20.1689 9.67098 20.3596 9.53033 20.5003C9.38968 20.6409 9.19891 20.7199 9 20.7199V20.7499Z"></path>
+                                            <path d="M16 16.7499C15.9015 16.7504 15.8038 16.7312 15.7128 16.6934C15.6218 16.6556 15.5392 16.6 15.47 16.5299C15.3296 16.3893 15.2507 16.1987 15.2507 15.9999C15.2507 15.8012 15.3296 15.6105 15.47 15.4699L18.94 11.9999L15.47 8.52991C15.3963 8.46125 15.3372 8.37845 15.2962 8.28645C15.2552 8.19445 15.2332 8.09513 15.2314 7.99443C15.2296 7.89373 15.2482 7.7937 15.2859 7.70031C15.3236 7.60692 15.3797 7.52209 15.451 7.45087C15.5222 7.37965 15.607 7.32351 15.7004 7.28579C15.7938 7.24807 15.8938 7.22954 15.9945 7.23132C16.0952 7.23309 16.1945 7.25514 16.2865 7.29613C16.3785 7.33712 16.4613 7.39622 16.53 7.46991L20.53 11.4699C20.6705 11.6105 20.7493 11.8012 20.7493 11.9999C20.7493 12.1987 20.6705 12.3893 20.53 12.5299L16.53 16.5299C16.4608 16.6 16.3782 16.6556 16.2872 16.6934C16.1962 16.7312 16.0985 16.7504 16 16.7499Z"></path>
+                                            <path d="M20 12.75H9C8.80109 12.75 8.61032 12.671 8.46967 12.5303C8.32902 12.3897 8.25 12.1989 8.25 12C8.25 11.8011 8.32902 11.6103 8.46967 11.4697C8.61032 11.329 8.80109 11.25 9 11.25H20C20.1989 11.25 20.3897 11.329 20.5303 11.4697C20.671 11.6103 20.75 11.8011 20.75 12C20.75 12.1989 20.671 12.3897 20.5303 12.5303C20.3897 12.671 20.1989 12.75 20 12.75Z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="ms-3">Sign out</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<aside id="logo-sidebar"
+       class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+       aria-label="Sidebar">
+    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+        <ul class="space-y-2 font-medium">
+            <li>
+                <a href="{% url 'home' %}"
+                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.619 10.849 12.519.209a.75.75 0 0 0-1.038 0L.37 10.86A1.252 1.252 0 0 0 1.25 13H3v9.5A1.5 1.5 0 0 0 4.5 24h4.25a.75.75 0 0 0 .75-.75v-6.5a.25.25 0 0 1 .25-.25h4.5c.137 0 .25.113.25.25v6.5c0 .414.336.75.75.75h4.25a1.5 1.5 0 0 0 1.5-1.5V13h1.75a1.252 1.252 0 0 0 .869-2.151z"/>
+                    </svg>
+                    <span class="ms-3">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'my_elections' %}"
+                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                         xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24"
+                         viewBox="0 0 24 24"
+                         fill="currentColor">
+                        <path d="m20.27 8.12-3.447 5.318-1.332 1.353-3.256 3.309c-.592.592-1.67.465-2.104-.264-.307-.507-.19-1.226.275-1.692l3.542-3.542.529-.529a.541.541 0 0 0 .042-.677l-.169-.222a3.254 3.254 0 0 0-5.487.285.53.53 0 0 0-.063.169H6.103c0-.021-.011-.042-.011-.063a5.629 5.629 0 0 1-.232-1.564c0-.846.201-1.692.581-2.453.708-1.427 2.019-2.463 3.573-2.865l5.487-1.396zM23.558 6.777c-1.165 1.105-1.207 1.353-1.565 1.353-.18-.032-.275-.063-.381-.159-.101-.103-5.52-5.625-5.624-5.688-.131-.165-.359-.283-.359-.592 0-.383.275-.43 1.311-1.533A.532.532 0 0 1 17.31 0c.423 0 .193.055 6.248 6.026a.525.525 0 0 1 0 .751z"/>
+                        <path d="M16.02 15.6v7.9c0 .28-.23.5-.5.5H2.5c-.28 0-.5-.22-.5-.5V13c0-.28.22-.5.5-.5h10.21c.01.01-3 3.06-3 3.06H9.7c-1.514 1.514-.461 3.93 1.53 3.93.61 0 1.19-.24 1.62-.67z"/>
+                        <path d="M9.71 15.56c-.12.12-.23.25-.32.38.09-.13.19-.26.31-.38z"/>
+                    </svg>
+                    <span class="flex-1 ms-3 whitespace-nowrap">My Elections</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'notifications' %}"
+                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg width="24" height="24"
+                         class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 23.959c1.58 0 2.94-1.01 3.44-2.42H8.56c.5 1.41 1.86 2.42 3.44 2.42zM21.65 17.269c-.04-.05-.08-.1-.13-.15a.8.8 0 0 0-.13-.13 6.666 6.666 0 0 1-1.38-1.61c-.6-1-.93-2.16-.93-3.36v-1.96c0-3.128-2.047-5.788-4.869-6.721V2.272c0-1.219-.992-2.21-2.211-2.21s-2.211.992-2.211 2.21v1.066C6.967 4.27 4.92 6.931 4.92 10.059v1.96c0 .24-.01.48-.04.71-.1.95-.41 1.85-.9 2.66-.18.3-.4.6-.65.87-.06.09-.13.17-.21.25s-.16.17-.25.25c-.09.09-.18.17-.27.24v.01a.8.8 0 0 0-.13.13c-.3.32-.47.74-.47 1.17 0 .95.77 1.73 1.72 1.73H20.28a1.728 1.728 0 0 0 1.37-2.77z"/>
+                    </svg>
+                    <span class="flex-1 ms-3 whitespace-nowrap">Notifications</span>
+                    <span id="notifications-count"
+                          class="hidden inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'bookmarks' %}"
+                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                         aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M4 1.25a.75.75 0 0 0-.75.75v20a.75.75 0 0 0 1.2.6L12 16.938l7.55 5.662a.75.75 0 0 0 1.2-.6V2a.75.75 0 0 0-.75-.75H4Zm8 4a.75.75 0 0 1 .75.75v2.25H15a.75.75 0 0 1 0 1.5h-2.25V12a.75.75 0 0 1-1.5 0V9.75H9a.75.75 0 0 1 0-1.5h2.25V6a.75.75 0 0 1 .75-.75Z"/>
+                    </svg>
+                    <span class="flex-1 ms-3 whitespace-nowrap">Bookmarks</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+<div id="loading-animation" class="p-4 sm:ml-64 hidden">
+    <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
+        <div class="grid grid-cols-3 gap-4 mb-4">
+
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+
+
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+
+
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div role="status" class="max-w-sm animate-pulse">
+                <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-4"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block content %}
+{% endblock %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+</body>
+</html>

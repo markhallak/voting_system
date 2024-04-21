@@ -4,13 +4,14 @@ import os
 import uuid
 
 from django.core.files.storage import FileSystemStorage
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.shortcuts import redirect, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from postgrest.types import CountMethod
 from user_agents import parse
 
-from voting_system.supabase_client import sp
+from util.qr_code_generator import QRCodeGenerator
+from supabase_client import sp
 
 
 @require_POST
@@ -233,10 +234,32 @@ def signup_step(request, step):
 
     if request.method == "POST":
         if step == 1:
+            myFile = request.FILES['profile-picture']
+            fs = FileSystemStorage(location='temp/')
+            filename = fs.save(myFile.name, myFile)
+            request.session['signup_info']['image_path'] = fs.path(filename)
+
+            request.session['signup_info']['username'] = request.POST['username']
+            request.session['signup_info']['email'] = request.POST['email']
+            sp.table()
+
             return redirect("signup_step", 2)
         elif step == 2:
             return redirect("signup_step", 3)
         elif step == 3:
-            redirect("home")
+            if QRCodeGenerator.verifyCode(request.session['secret'], request.session['code']):
+                return redirect("home")
+            else:
+                return JsonResponse({'isOtpCorrect': False})
     else:
         return render(request, "signup.html", context)
+
+
+@require_GET
+def generate_qr_code(request):
+    return HttpResponse(QRCodeGenerator.generate_qr_code(), content_type='image/png')
+
+
+@require_POST
+def verify_code(request):
+    return HttpResponse(QRCodeGenerator.verifyCode(secret, code))

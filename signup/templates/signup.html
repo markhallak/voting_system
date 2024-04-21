@@ -15,7 +15,7 @@
 
 <!-- Left Side -->
 <div class="w-full md:w-3/5 login-image desktop-login-image bg-cover bg-no-repeat bg-center md:h-screen">
-    <div class="overlay-text">Secure, Future-Proof Voting for Our Community</div>
+    <div class="overlay-text">Secure, Future-Proof Voting For Our Community</div>
     <div class="card-footer hidden md:flex">
         <span class="md:text-white text-black ml-4">Do you already have an account?</span>
         <a href="/login" class="bg-purple-600 text-white py-2 px-4 rounded-lg mr-4">Sign in</a>
@@ -92,7 +92,7 @@
                          style="margin-top: -10px;"></div>
                 </div>
                 <button type="submit" id="continue-step-1"
-                        class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg mt-4 opacity-50 cursor-not-allowed"
+                        class="w-full bg-purple-600 text-white py-2 px-4 mt-4 opacity-50 cursor-not-allowed"
                         disabled>
                     Continue
                 </button>
@@ -134,7 +134,7 @@
                          style="margin-top: -10px;"></div>
                 </div>
                 <button type="submit" id="continue-step-2"
-                        class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg mt-4 opacity-50 cursor-not-allowed"
+                        class="w-full bg-purple-600 text-white py-2 px-4 mt-4 opacity-50 cursor-not-allowed"
                         disabled>
                     Continue
                 </button>
@@ -144,8 +144,11 @@
         <form method="post" action="{% url 'signup_step' step=3 %}">
             {% csrf_token %}
             <input type="hidden" class="csrfToken" value="{{ csrf_token }}">
+            <div id="qr-code-container" class="flex justify-center mb-4">
+                <img id="qr-code" src="" alt="QR Code" style="width: 100px; height: 100px;">
+            </div>
             <div class="flex">
-							<span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+							<span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
 								<svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                                      xmlns="http://www.w3.org/2000/svg"
                                      fill="currentColor" viewBox="0 0 20 20">
@@ -153,8 +156,8 @@
 								</svg>
 							</span>
                 <input type="text" id="totp-input"
-                       class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Username (eg. john.doe-12)" name="username">
+                       class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Enter the 8-digit otp" name="totp">
             </div>
             <div class="flex hidden" id="totp-inputFeedback">
                 <div id="totp-input-feedback"
@@ -163,7 +166,7 @@
             </div>
             <div class="col-span-2">
                 <button type="submit" id="continue-step-3"
-                        class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg mt-4 opacity-50 cursor-not-allowed"
+                        class="w-full bg-purple-600 text-white py-2 px-4 mt-4 opacity-50 cursor-not-allowed"
                         disabled>
                     Finish
                 </button>

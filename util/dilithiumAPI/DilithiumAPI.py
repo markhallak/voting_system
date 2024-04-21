@@ -1,17 +1,24 @@
 import jpype
 
-jvmPath = jpype.getDefaultJVMPath()
-jpype.startJVM(jvmPath)
 
-classpath1 = r"C:\Users\markh\eclipse-workspace3\CP\bin"
-jpype.addClassPath(classpath1)
+class DilithiumAPI:
+    MyClass = None
+    def __init__(self):
+        jvmPath = jpype.getDefaultJVMPath()
+        jpype.startJVM(jvmPath)
 
-classpath2 = r"C:\Users\markh\eclipse-workspace3\CP\bin\bcprov-ext-jdk18on-177.jar"
-jpype.addClassPath(classpath2)
+        classpath1 = r"C:\Users\markh\eclipse-workspace3\CP\bin"
+        jpype.addClassPath(classpath1)
 
-MyClass = jpype.JClass("DilithiumSignature")
+        classpath2 = r"C:\Users\markh\eclipse-workspace3\CP\bin\bcprov-ext-jdk18on-177.jar"
+        jpype.addClassPath(classpath2)
 
-myVar = MyClass.verify("Jo!".encode(), MyClass.sign("Jo!".encode()))
-print(myVar)
+        self.MyClass = jpype.JClass("DilithiumSignature")
 
-jpype.shutdownJVM()
+    print(MyClass.getPublicKey())
+    print(MyClass.getPrivateKey())
+
+    # myVar = MyClass.verify("Jo!".encode(), MyClass.sign("Jo!".encode()))
+    # print(myVar)
+
+    jpype.shutdownJVM()

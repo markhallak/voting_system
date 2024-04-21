@@ -1,10 +1,12 @@
 from pathlib import Path
 
+from django.core.management.utils import get_random_secret_key
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATE_DIR = BASE_DIR / "templates"
 
-SECRET_KEY = 'django-insecure-#llfbz9(4g3xsm)a2253s3x1wxy)r0b$yivn7znoapeay0&t0@'
+SECRET_KEY = get_random_secret_key()
 
 SUPABASE_URL = "https://opskdmutoyxkdvrzdioc.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wc2tkbXV0b3l4a2R2cnpkaW9jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwNDk0MTYzNSwiZXhwIjoyMDIwNTE3NjM1fQ.9x9VKXvJJB9tzbZZvS0fDEU1QDIqmv6iBiuTJnEYu3k"
@@ -38,7 +40,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [TEMPLATE_DIR, BASE_DIR / 'home/templates', BASE_DIR / 'login/templates',
-                 BASE_DIR / "signup/templates"],
+                 BASE_DIR / "signup/templates", BASE_DIR / "elections/templates", BASE_DIR / "notifications/templates",
+                 BASE_DIR / "voting_system/templates", BASE_DIR / "bookmarks/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,11 +83,18 @@ STATICFILES_DIRS = [
     BASE_DIR / "home/static", BASE_DIR / "login/static", BASE_DIR / "signup/static"
 ]
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_COOKIE_SECURE = True
 
-SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_SECONDS = 3600
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
@@ -95,3 +105,14 @@ X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
 CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_HTTPONLY = True
+
+SESSION_COOKIE_AGE = 3600
+
+SECURE_SSL_REDIRECT = False
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+USE_X_FORWARDED_HOST = True

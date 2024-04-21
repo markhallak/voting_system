@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="p-4 sm:ml-64">
+    <div class="p-4 bg-white mt-14">
+        <div class="grid grid-cols-3 gap-4 mb-10">
+            <div class="flex items-center p-6 border-2 bg-blue-50 border-blue-800 text-blue-800 rounded-lg">
+                <div class="flex-shrink-0 flex items-center justify-center">
+                    <img height="50" width="50"
+                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEz0lEQVR4nO2czY4cNRDHjXIJ3IATm3ENF25wRwLGHkCIQCCAWEGAO/AChBcIT0C4cgkSrHbKqyQvQHiBhAdIwiYhRBsQIIVLIgZVEGTa3T3tdtvTdnf9JB92x/ZU1d/tr5oZIRiGYRiGYRiGYQYG6MXroPA6aLPMvFybzvCoyB1yJIFgLsMU3Be5038QTdAicqfvAAILsl4QkRmQuf2Dcwgyt39wDkHm9g/OIcjc/sE5BJnbPziHIHP7k3EIFG6DMrdB4Y2JMm/V1ZvO9t6WCn8Bjb9Jbd4r9cOChGD5EGg8eBBMvFsVbPofvfZ/PWV+pbardViQQEhlbhWDWRSlJIY2S2pj98OCBGI6x3fsgP8nSpUY9De1sfthQQJSF/g6oar6YEECA2rv3bIAK0WZe6AXH9a2H9uiPp2b16TGK76XgFLjlaY8RfWTsv7JcLU/O5ocohxD5xtZhdcbt8BVgtDTofCjLvZnR9+CQJ0YjqKMThCabqTGyx2mrMsTtXi16r15UfcQJBZS4/G2215qk4r90ejLISjl8psPhlU5cxYkEFKbn5t2U7Yo1Mauw4KEnbL2aY2pmopW6/277cZ9Od97036dBUkMFiQxshFEzswbxXnarYjMgPZnohug8NhmrdzeOSS1uelzbhCZAV5nI3OTYrRBI3ef8z3IJfyZ4mtVd2K+flKMNuUrXUecSl8Q4/GZ4uZzSIup69SmfKX7px9X33yiFu/X1+1NkGWIAeNq/0ThCUuQS2ITbL1gJGj8+8Ebm3tbL+HjYxcEnj//qH3yf3K+O43uqFT4qTUSvl9XPxVBhGe9NvaDxgurdaXCT0RspDLnLSM/W2/kmAQxJwuCaHNOxGTy7M7DoPCOtX483WBkLxlD6EEQioU1e9yhmImoW8niI/lTc5t+ElTQgyCEPbhowIlYgDZfFQUxXzq0GZUgoPC0ZdtpEQupzNW26veVMYSeBKGYWIP2qojBZGaesYz764ljZx9patfWoVD4CtzUT4x11gup8POicXjWpd3YBCFod2W1OylC47vHHtrViXCAYmP1eyGoc5NXdh6zT6F0Yk9ZkOkMj7YTBfe7rEXl24xC33cphuGcm5sPrIXqomvbvgQJha/9dJdVXEfwRDCjpMJvfG8yRyuINl9Yg/hMGIu2dw7d/yaSw13/kdnuU1KZhdT4p+uimTpQ48d9H5X5bvLiuSNOOSNlbgdJWrl2TGLQN5Da7mJSB5rXnoNKUVoM5E7JqLpHj54Ml8VTZAa4bAgUflvVlmLlO9V3XpzWTVNDF0Qq8/tGklZttm9S4R9Oo2mARdYJ0uG40PmAQwtc34GBvkrNlBU8adXmCoAWtuJXkcdS8EC+vLcVPWnlc0lGhtFoGcP0JclH8nWNGEGTVj7JKCZi0sonGcVETFqVVB3CL3L2RDlp1XK28U1GMdVM1deHOyWtfJNRTKSkFWjzg7VV+9i5MRM2adXbRyIHzlbLj+AGSUYxEZJWpWQUl2W8w6VD0qr8w19cIJ4gt5ofKxZguckYsCA6c0EaGzCtYEESgwVJDBYkMViQxGBBEoMFSQwWJDFYkMRgQRKDBUkMFiQxWJDEYEESgwVJDBYkMViQxGBBEoMFSQwWJDE4Rc4wDMMwDMMwjEiMfwBUBnefnZFWfQAAAABJRU5ErkJggg==">
+                </div>
+                <div class="ml-6">
+                    <h5 class="text-xl font-bold">50</h5>
+                    <p class="text-sm">Total Elections</p>
+                </div>
+            </div>
+            <div class="flex items-center p-6 border-2 bg-green-50 border-green-800 text-green-800 rounded-lg">
+                <div class="flex-shrink-0 flex items-center justify-center">
+                    <img height="50" width="50"
+                         src="data:image/png;base64,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">
+                </div>
+                <div class="ml-6">
+                    <h5 class="text-xl font-bold">500</h5>
+                    <p class="text-sm">Registered Voters</p>
+                </div>
+            </div>
+            <div class="flex items-center p-6 border-2 bg-yellow-50 border-yellow-800 text-yellow-800 rounded-lg">
+                <div class="flex-shrink-0 flex items-center justify-center">
+                    <img height="50" width="50"
+                         src="data:image/png;base64,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">
+                </div>
+                <div class="ml-6">
+                    <h5 class="text-xl font-bold">110</h5>
+                    <p class="text-sm">Online Users</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 mb-4">
+            <div class="mb-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
+                <a href="#">
+                    <img class="rounded-t-lg" src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt=""/>
+                </a>
+                <div class="p-5">
+                    <a href="#">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy
+                            technology acquisitions 2021</h5>
+                    </a>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise
+                        technology acquisitions of 2021 so far, in reverse chronological order.</p>
+                </div>
+            </div>
+            <div class="mb-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
+                <a href="#">
+                    <img class="rounded-t-lg" src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt=""/>
+                </a>
+                <div class="p-5">
+                    <a href="#">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy
+                            technology acquisitions 2021</h5>
+                    </a>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise
+                        technology acquisitions of 2021 so far, in reverse chronological order.</p>
+                </div>
+            </div>
+            <div class="mb-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
+                <a href="#">
+                    <img class="rounded-t-lg" src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt=""/>
+                </a>
+                <div class="p-5">
+                    <a href="#">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy
+                            technology acquisitions 2021</h5>
+                    </a>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise
+                        technology acquisitions of 2021 so far, in reverse chronological order.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

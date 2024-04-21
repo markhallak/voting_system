@@ -70,7 +70,7 @@ def home():
     # decrypted_message = decrypt_data(plainSharedSecret, encrypted_message)
     # print("Decrypted Message:", decrypted_message.decode('utf-8'))
     print(f"Plain Shared Secret 2: {kem_decaps1024(private, encapsulatedSharedSecret)}")
-    return render_template('index.html')
+    return render_template('home.html')
 
 
 if __name__ == "__main__":

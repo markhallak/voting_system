@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const usernameInput = document.getElementById('username-input');
     const kyberPublicKeyInput = document.getElementById('kyber-public-key-input');
+    const totpInput = document.getElementById('totp-input');
     const csrfTokenElement = document.querySelector('.csrfToken');
 
     if (usernameInput) {
@@ -129,6 +130,42 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 disableButton(continueButton2);
             }
+        }
+
+    } else if (totpInput) {
+        const qrCodeImage = document.getElementById("qr-code");
+        const continueButton3 = document.getElementById("continue-step-3");
+
+        totpInput.addEventListener('input', function() {
+            updateContinueButtonStep3();
+        });
+
+        fetchQRCode();
+
+        function fetchQRCode() {
+            fetch('/generate-qr-code')
+                .then(function(response) {
+                    return response.blob();
+                })
+                .then(function(blob) {
+                    const qrUrl = URL.createObjectURL(blob);
+                    qrCodeImage.src = qrUrl;
+                })
+                .catch(function(error) {
+                    console.error('Error fetching QR code:', error);
+                });
+        }
+
+        function updateContinueButtonStep3() {
+            if (isValidTOTP(totpInput.value)) {
+                enableButton(continueButton3);
+            } else {
+                disableButton(continueButton3);
+            }
+        }
+
+        function isValidTOTP(totp) {
+            return /^[0-9]{6}$/.test(totp);
         }
 
     }
