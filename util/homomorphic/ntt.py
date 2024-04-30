@@ -3,8 +3,8 @@ and Fermat Theoretic Transform (FTT). See https://rijndael.ece.vt.edu/schaum/pdf
 """
 
 from math import log, pi, cos, sin
-import util.number_theory as nbtheory
-from util.bit_operations import bit_reverse_vec, reverse_bits
+import util.homomorphic.number_theory as nbtheory
+from util.homomorphic.bit_operations import bit_reverse_vec, reverse_bits
 
 class NTTContext:
     """An instance of Number/Fermat Theoretic Transform parameters.

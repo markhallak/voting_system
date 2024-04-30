@@ -1,6 +1,6 @@
 """A module to decrypt for the BFV scheme."""
 
-from util.plaintext import Plaintext
+from util.homomorphic.plaintext import Plaintext
 
 class BFVDecryptor:
 

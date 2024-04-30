@@ -1,9 +1,9 @@
-from util.kyberAPI.poly import polyvec_to_bytes, polyvec_from_bytes, compress_poly, compress_polyvec, decompress_polyvec, decompress_poly, \
+from util.kyber.poly import polyvec_to_bytes, polyvec_from_bytes, compress_poly, compress_polyvec, decompress_polyvec, decompress_poly, \
     generate_new_polyvec
-from util.kyberAPI.params import KYBER_INDCPA_PUBLICKEYBYTES_K512, KYBER_INDCPA_PUBLICKEYBYTES_K768, KYBER_INDCPA_PUBLICKEYBYTES_K1024, \
+from util.kyber.params import KYBER_INDCPA_PUBLICKEYBYTES_K512, KYBER_INDCPA_PUBLICKEYBYTES_K768, KYBER_INDCPA_PUBLICKEYBYTES_K1024, \
     KYBER_POlYVEC_BYTES_512, KYBER_POlYVEC_BYTES_768, KYBER_POlYVEC_BYTES_1024, KYBER_POLYVEC_COMPRESSED_BYTES_K512, \
     KYBER_POLYVEC_COMPRESSED_BYTES_K768, KYBER_POLYVEC_COMPRESSED_BYTES_K1024, KYBER_POLY_BYTES, KYBER_Q, KYBER_N
-from util.kyberAPI.util import cast_to_int32, cast_to_short, cast_to_byte
+from util.kyber.util import cast_to_int32, cast_to_short, cast_to_byte
 from Crypto.Hash import SHAKE128, SHAKE256
 
 

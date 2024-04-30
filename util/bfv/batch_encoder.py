@@ -2,9 +2,9 @@
 Chinese Remainder Theorem (CRT) batching.
 """
 
-from util.ntt import NTTContext
-from util.plaintext import Plaintext
-from util.polynomial import Polynomial
+from util.homomorphic.ntt import NTTContext
+from util.homomorphic.plaintext import Plaintext
+from util.homomorphic.polynomial import Polynomial
 
 class BatchEncoder:
     """An encoder for several integers to polynomials using Chinese

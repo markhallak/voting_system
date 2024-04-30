@@ -1,14 +1,12 @@
-import base64
 import os
-from flask import Flask, render_template
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
-from util.kyberAPI.ccakem import kem_keygen1024, kem_encaps1024, kem_decaps1024
 
-app = Flask(__name__, static_url_path="", static_folder="web/static", template_folder="web/templates")
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+from util.kyber.ccakem import kem_keygen1024, kem_encaps1024, kem_decaps1024
 
 
 def encrypt_data(key, plaintext):
@@ -59,19 +57,16 @@ def encapsulateSecret(publicKey):
     return plainSharedSecret, cipherSharedSecret
 
 
-@app.route("/")
 def home():
     private, public = generateKeyPair()
     plainSharedSecret, encapsulatedSharedSecret = encapsulateSecret(public)
     print(f"Plain Shared Secret: {plainSharedSecret}")
     print(f"Encapsulated Shared Secret: {encapsulatedSharedSecret}")
+
+
     # message = b"Hello, this is a secret message!"
     # encrypted_message = encrypt_data(plainSharedSecret, message)
     # decrypted_message = decrypt_data(plainSharedSecret, encrypted_message)
     # print("Decrypted Message:", decrypted_message.decode('utf-8'))
     print(f"Plain Shared Secret 2: {kem_decaps1024(private, encapsulatedSharedSecret)}")
-    return render_template('home.html')
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)

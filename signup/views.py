@@ -10,8 +10,11 @@ from django.views.decorators.http import require_POST, require_GET
 from postgrest.types import CountMethod
 from user_agents import parse
 
+from manage import addEmailToQueue
+from util.DilithiumAPI import DilithiumAPI
+from util.kyberAPI import generateKeyPair
 from util.qr_code_generator import QRCodeGenerator
-from supabase_client import sp
+from globals import sp, homomorphicPublicKey
 
 
 @require_POST
@@ -67,7 +70,6 @@ def get_client_ips(request):
     if x_forwarded_for:
         ip_list.extend([ip.strip() for ip in x_forwarded_for.split(',')])
 
-    # Add the direct IP address
     remote_addr = request.META.get('REMOTE_ADDR')
 
     if remote_addr:
@@ -237,14 +239,23 @@ def signup_step(request, step):
             myFile = request.FILES['profile-picture']
             fs = FileSystemStorage(location='temp/')
             filename = fs.save(myFile.name, myFile)
-            request.session['signup_info']['image_path'] = fs.path(filename)
 
-            request.session['signup_info']['username'] = request.POST['username']
-            request.session['signup_info']['email'] = request.POST['email']
-            sp.table()
+            username = request.POST['username']
+            request.session['signup_info']['username'] = username
 
+            email = request.POST["email"]
+
+            sp.table("Users").insert({"username": username, "email": email,
+                                      "profile_picture_url": fs.path(filename)}).execute()
+
+            KyberPrivateKey, KyberPublicKey = generateKeyPair()
+            DilithiumPrivateKey, DilithiumPublicKey = DilithiumAPI().getPairKey()
+
+            addEmailToQueue(email, {"kyberPublicKey": KyberPublicKey, "dilithiumPublicKey": DilithiumPublicKey, "homomorphicPublicKey": homomorphicPublicKey})
             return redirect("signup_step", 2)
         elif step == 2:
+
+            sp.table("Users").update({"kyber_public_key": request.POST["kyber_public_key"], "dilithium_public_key":request.POST["dilithium_public_key"]}).execute()
             return redirect("signup_step", 3)
         elif step == 3:
             if QRCodeGenerator.verifyCode(request.session['secret'], request.session['code']):
@@ -254,12 +265,11 @@ def signup_step(request, step):
     else:
         return render(request, "signup.html", context)
 
-
 @require_GET
 def generate_qr_code(request):
     return HttpResponse(QRCodeGenerator.generate_qr_code(), content_type='image/png')
 
 
-@require_POST
-def verify_code(request):
-    return HttpResponse(QRCodeGenerator.verifyCode(secret, code))
+# @require_POST
+# def verify_code(request):
+#     return HttpResponse(QRCodeGenerator.verifyCode(secret, code))

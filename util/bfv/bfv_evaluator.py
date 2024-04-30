@@ -1,6 +1,6 @@
 """A module to perform computations on ciphertexts in BFV."""
 
-from util.ciphertext import Ciphertext
+from util.homomorphic.ciphertext import Ciphertext
 
 class BFVEvaluator:
 

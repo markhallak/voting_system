@@ -16,11 +16,9 @@ class DilithiumAPI:
 
         self.MyClass = jpype.JClass("DilithiumSignature")
 
-    def getPublicKey(self):
-        return self.MyClass.getPublicKey()
-
-    def getPrivateKey(self):
-        return self.MyClass.getPrivateKey()
+    def getPairKey(self):
+        instance = self.MyClass.getPairKey()
+        return bytes(instance[0]).decode('ISO-8859-1'), bytes(instance[1]).decode("ISO-8859-1")
 
     def shutDown(self):
         jpype.shutdownJVM()
@@ -30,4 +28,3 @@ class DilithiumAPI:
 
     # myVar = MyClass.verify("Jo!".encode(), MyClass.sign("Jo!".encode()))
     # print(myVar)
-

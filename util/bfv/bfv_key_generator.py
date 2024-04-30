@@ -1,11 +1,11 @@
 """A module to generate public and private keys for the BFV scheme."""
 
 from math import ceil, floor, log, sqrt
-from util.polynomial import Polynomial
-from util.public_key import PublicKey
-from bfv.bfv_relin_key import BFVRelinKey
-from util.secret_key import SecretKey
-from util.random_sample import sample_triangle, sample_uniform
+from util.homomorphic.polynomial import Polynomial
+from util.homomorphic.public_key import PublicKey
+from util.bfv.bfv_relin_key import BFVRelinKey
+from util.homomorphic.secret_key import SecretKey
+from util.homomorphic.random_sample import sample_triangle, sample_uniform
 
 class BFVKeyGenerator:
 

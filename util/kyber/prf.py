@@ -1,5 +1,5 @@
 from Crypto.Hash import SHAKE256
-from util.kyberAPI.util import cast_to_byte
+from util.kyber.util import cast_to_byte
 
 def generate_prf_byte_array(l, key, nonce):
     """

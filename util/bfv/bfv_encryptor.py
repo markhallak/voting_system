@@ -1,8 +1,8 @@
 """A module to encrypt for the BFV scheme."""
 
-from util.ciphertext import Ciphertext
-from util.polynomial import Polynomial
-from util.random_sample import sample_triangle
+from util.homomorphic.ciphertext import Ciphertext
+from util.homomorphic.polynomial import Polynomial
+from util.homomorphic.random_sample import sample_triangle
 
 class BFVEncryptor:
 

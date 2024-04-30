@@ -1,7 +1,7 @@
 """A module to handle polynomial arithmetic in the quotient ring
 Z_a[x]/f(x).
 """
-from util.ntt import NTTContext, FFTContext
+from util.homomorphic.ntt import NTTContext, FFTContext
 
 class Polynomial:
     """A polynomial in the ring R_a.
