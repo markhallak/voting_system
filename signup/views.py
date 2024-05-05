@@ -4,15 +4,14 @@ import logging
 import os
 import uuid
 
-import keyring
 import msgpack
+from Crypto.Hash import SHA3_512
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST, require_GET
 from postgrest.types import CountMethod
 from user_agents import parse
-from Crypto.Hash import SHA3_512
 
 from globals import sp
 from manage import addEmailToQueue
@@ -324,7 +323,6 @@ def generate_qr_code(request):
     encapsulatedSharedSecret = list(fromBase64(unpackedData[f"server-{username}-encapsulatedSharedSecret"]))
     plainSharedSecret = kem_decaps1024(kyberPrivateKey, encapsulatedSharedSecret)
 
-    # Ensure plainSharedSecret is bytes before encrypting
     plainSharedSecret = bytes([(x % 256) for x in plainSharedSecret])
     encryptedTotpSecret = KyberAPI().encrypt_data(plainSharedSecret, bytes(secret.encode('utf-8')))
 

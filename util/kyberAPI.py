@@ -49,15 +49,12 @@ class KyberAPI:
         return plaintext
 
     def decryptDataJS(self, encrypted_data_b64, passphrase):
-        # Decode the base64 encoded data
         encrypted_data = base64.b64decode(encrypted_data_b64)
 
-        # Extract the salt, iv and ciphertext from the combined byte array
         salt = encrypted_data[:16]
         iv = encrypted_data[16:32]
         ciphertext = encrypted_data[32:]
 
-        # Derive the key using PBKDF2 HMAC with SHA-256
         backend = default_backend()
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
@@ -68,12 +65,10 @@ class KyberAPI:
         )
         key = kdf.derive(passphrase.encode())
 
-        # Decrypt the ciphertext using AES-CBC
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
         decryptor = cipher.decryptor()
         padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
 
-        # Unpad the plaintext
         unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
         plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
 
