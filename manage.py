@@ -22,28 +22,33 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-def addEmailToQueue(receiverEmail, jsonData):
+def addEmailToQueue(jsonData):
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
     channel.queue_declare(queue='email_queue')
-    message = json.dumps({'receiverEmail': receiverEmail, 'jsonData': jsonData})
+    message = json.dumps({"jsonData": jsonData})
     channel.basic_publish(exchange='', routing_key='email_queue', body=message)
     connection.close()
 
 
-def sendEmail(receiverEmail, jsonData):
+def sendEmail(jsonData):
     sender = "markhallak@outlook.com"
     message = MIMEMultipart("alternative")
     message['From'] = sender
-    message['To'] = receiverEmail
-    message['Subject'] = "Flight Deleted"
+    message['To'] = jsonData['receiverEmail']
+    message['Subject'] = "Platform Key Signatures"
 
     html = f"""
             <html>
             <body>
-            Dear User,
+            Dear {jsonData['username']},
             <br><br>
-            Unfortunately, your flight <strong>#{jsonData['flight_number']}</strong> is not <strong>available</strong> anymore.
+            The following are the server's public key. Please enter them to verify them:
+            <br>
+            Kyber Public Key Signature: <strong>{jsonData['kyberPublicKeyHash']}</strong>
+            <br>
+            Dilithium Public Key Signature: <strong>{jsonData['dilithiumPublicKeyHash']}</strong>
+            <br>
             <br><br>
             Best Regards,
             <br>
@@ -56,8 +61,8 @@ def sendEmail(receiverEmail, jsonData):
 
     with smtplib.SMTP('smtp.outlook.com', 587) as server:
         server.starttls()
-        server.login('your_account@outlook.com', 'your_password')
-        server.sendmail(sender, receiverEmail, message.as_string())
+        server.login('markhallak@outlook.com', '35B3=8%sj]NXbfws')
+        server.sendmail(sender, jsonData['receiverEmail'], message.as_string())
 
 
 def parse_email_info(body):
@@ -67,7 +72,7 @@ def parse_email_info(body):
 def start_pika_consumer():
     def callback(ch, method, properties, body):
         email_info = parse_email_info(body)
-        sendEmail(email_info['receiverEmail'], email_info['jsonData'])
+        sendEmail(email_info['jsonData'])
 
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()

@@ -5,6 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="kyberPublicKey" content="{{ kyberPublicKey }}">
+    <meta name="dilithiumPublicKey" content="{{ dilithiumPublicKey }}">
     <title>E-Voting System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flowbite/dist/flowbite.min.css" rel="stylesheet">
@@ -33,7 +35,7 @@
             {% endif %}
         </h2>
         {% if step == 1 %}
-        <form method="post" action="{% url 'signup_step' step=1 %}">
+        <form method="post" action="{% url 'signup_step' step=1 %}" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" class="csrfToken" value="{{ csrf_token }}">
             <div class="set-item flex flex-col justify-center space-y-4 mt-3">
@@ -101,37 +103,22 @@
             {% csrf_token %}
             <input type="hidden" class="csrfToken" value="{{ csrf_token }}">
             <div class="set-item flex flex-col justify-center space-y-4 mt-3">
-                <input type="text" id="kyber-public-key-input"
-                       class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Public Key 1" name="kyber-public-key">
-                <div class="flex hidden" id="kyber-public-key-inputFeedback">
-                    <div id="kyber-public-key-input-feedback"
-                         class="text-left text-sm text-xs w-full text-red-500 capitalize-first-letter lowercase"
-                         style="margin-top: -10px;"></div>
-                </div>
                 <input type="text" id="kyber-public-key-signature-input"
                        class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Public Key 1 Signature" name="kyber-public-key-signature">
+                       placeholder="Kyber Public Key Signature" name="kyber-public-key-signature">
                 <div class="flex hidden" id="kyber-public-key-signature-inputFeedback">
                     <div id="kyber-public-key-signature-input-feedback"
                          class="text-left text-sm text-xs w-full text-red-500 capitalize-first-letter lowercase"
                          style="margin-top: -10px;"></div>
                 </div>
-                <input type="text" id="dilithium-public-key-input"
-                       class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Public Key 2" name="dilithium-public-key">
-                <div class="flex hidden" id="dilithium-public-key-inputFeedback">
-                    <div id="dilithium-public-key-input-feedback" class="text-left text-sm text-red-500"
-                         style="margin-top: -10px;"></div>
-                </div>
                 <input type="text" id="dilithium-public-key-signature-input"
                        class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Public Key 2 Signature" name="dilithium-public-key-signature">
+                       placeholder="Dilithium Public Key Signature" name="dilithium-public-key-signature">
                 <div class="flex hidden" id="dilithium-public-key-signature-inputFeedback">
                     <div id="dilithium-public-key-signature-input-feedback" class="text-left text-sm text-red-500"
                          style="margin-top: -10px;"></div>
                 </div>
-                <button type="submit" id="continue-step-2"
+                <button type="button" id="continue-step-2"
                         class="w-full bg-purple-600 text-white py-2 px-4 mt-4 opacity-50 cursor-not-allowed"
                         disabled>
                     Continue
@@ -155,7 +142,7 @@
 							</span>
                 <input type="text" id="totp-input"
                        class="rounded-none bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="Enter the 8-digit otp" name="totp">
+                       placeholder="Enter the 6-digit otp" name="totp">
             </div>
             <div class="flex hidden" id="totp-inputFeedback">
                 <div id="totp-input-feedback"
@@ -178,7 +165,7 @@
         <a href="/login" class="text-blue-600 underline">Sign in</a>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/flowbite/dist/flowbite.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/jssha@3.3.1"></script>
 <script type="module" src="{% static 'js/signup.js'%}"></script>
 </body>
 </html>

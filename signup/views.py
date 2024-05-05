@@ -1,20 +1,25 @@
+import base64
 import json
 import logging
 import os
 import uuid
 
+import keyring
+import msgpack
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST, require_GET
 from postgrest.types import CountMethod
 from user_agents import parse
+from Crypto.Hash import SHA3_512
 
+from globals import sp
 from manage import addEmailToQueue
 from util.DilithiumAPI import DilithiumAPI
-from util.kyberAPI import generateKeyPair
+from util.kyber.ccakem import kem_decaps1024
+from util.kyberAPI import KyberAPI
 from util.qr_code_generator import QRCodeGenerator
-from globals import sp, homomorphicPublicKey
 
 
 @require_POST
@@ -37,21 +42,6 @@ def checkEmail(request):
         return JsonResponse({'isAvailable': True})
     else:
         return JsonResponse({'isAvailable': False})
-
-
-@require_POST
-def checkPhone(request):
-    data, count = sp.table("User").select('phone_number', count=CountMethod.exact).eq('phone_number',
-                                                                                      json.loads(request.body)[
-                                                                                          'phone']).execute()
-    if count and count[1] == 0:
-        return JsonResponse({'isAvailable': True})
-    else:
-        return JsonResponse({'isAvailable': False})
-
-
-def confirm(request):
-    return render(request, template_name="confirmation.html")
 
 
 def deleteTempPic(path):
@@ -158,118 +148,188 @@ def signup_attempt(request):
     return JsonResponse({'success': False})
 
 
-def signuup(request, step):
-    context = {'step': step}
-
-    if 'signup_info' not in request.session:
-        request.session['signup_info'] = {}
-        request.session['step_completed'] = 0
-
-    if request.method == "POST":
-
-        if step == 1 and 'account-type' in request.POST:
-            accountType = request.POST['account-type']
-            request.session['signup_info']['account-type'] = accountType
-            request.session['step_completed'] = 1
-            request.session.modified = True
-            return redirect("signup_step", step=2)
-        elif step == 2 and 'username' in request.POST and 'email' in request.POST and 'phone' in request.POST and 'address' in request.POST:
-            request.session['signup_info']['username'] = request.POST['username']
-            request.session['signup_info']['email'] = request.POST['email']
-            request.session['signup_info']['phone'] = request.POST['phone']
-            request.session['signup_info']['address'] = request.POST['address']
-            request.session['step_completed'] = 2
-            request.session.modified = True
-            return redirect('signup_step', step=3)
-
-        elif step == 3 and 'profile-picture' in request.FILES:
-            myFile = request.FILES['profile-picture']
-            fs = FileSystemStorage(location='temp/')
-            filename = fs.save(myFile.name, myFile)
-            request.session['signup_info']['image_path'] = fs.path(filename)
-            request.session['step_completed'] = 3
-            request.session.modified = True
-
-            if request.session['signup_info']['account-type'] == "Individual":
-                return redirect('signup_step', step=4)
-            else:
-                return redirect('signup_step', step=5)
-
-        elif step == 4 and all(k in request.POST for k in ['first name', 'last name', 'date-of-birth']):
-
-            request.session['signup_info']['first-name'] = request.POST['first name']
-            request.session['signup_info']['last-name'] = request.POST['last name']
-            request.session['signup_info']['date-of-birth'] = request.POST['date-of-birth']
-            request.session['step_completed'] = 4
-            request.session.modified = True
-            return redirect("signup")
-        elif step == 5 and 'name' in request.POST and 'ein' in request.POST:
-            request.session['signup_info']['name'] = request.POST['name']
-            request.session['signup_info']['ein'] = request.POST['ein']
-            request.session['step_completed'] = 5
-            request.session.modified = True
-            return redirect("signup")
-
-    else:
-        if step < 1:
-            return redirect("signup_step", step=1)
-
-        if step > 5:
-            if request.session['signup_info']['account-type'] == "Dealership":
-                return redirect("signup_step", step=5)
-            else:
-                return redirect("signup_step", step=4)
-
-        if ((step != 5 and step > request.session['step_completed'] + 1) or (
-                step == 5 and request.session['step_completed'] != 3)) and request.session['step_completed'] != 5:
-            return redirect("signup_step", step=request.session['step_completed'] + 1)
-
-    return render(request, 'signup.html', context)
-
-
 def signup(request):
     return redirect("signup_step", 1)
 
 
-def signup_step(request, step):
-    context = {'step': step}
+def toBase64(data):
+    try:
+        if isinstance(data, bytes):
+            return base64.b64encode(data).decode('utf-8')
+        elif isinstance(data, list):
+            if all(isinstance(x, int) for x in data):
+                bytes_array = bytes([x % 256 for x in data])
+                return base64.b64encode(bytes_array).decode('utf-8')
+            else:
+                raise ValueError("List must contain only integers")
+        elif isinstance(data, str):  # Handling string data by converting to bytes
+            bytes_data = data.encode('utf-8')
+            return base64.b64encode(bytes_data).decode('utf-8')
+        else:
+            raise ValueError(f"Data must be bytes, list of byte values, or string, got {type(data)} with value {data}")
+    except Exception as e:
+        print(f"Error processing data for base64 encoding: {e}")
+        raise
 
+
+def fromBase64(data):
+    padding_needed = len(data) % 4
+    if padding_needed != 0:
+        data += '=' * (4 - padding_needed)
+    return base64.b64decode(data)
+
+
+def getUnpackedData():
+    with open('data.msgpack', 'rb') as file:
+        read_data = file.read()
+
+    if len(read_data) != 0:
+        unpacked_data = msgpack.unpackb(read_data, raw=False)
+        return unpacked_data
+    else:
+        return {}
+
+def bytes_to_int_list(byte_data):
+    return [b for b in byte_data]
+
+def signup_step(request, step):
     if request.method == "POST":
         if step == 1:
-            myFile = request.FILES['profile-picture']
-            fs = FileSystemStorage(location='temp/')
-            filename = fs.save(myFile.name, myFile)
+            if 'signup_info' not in request.session:
+                request.session['signup_info'] = {}
+                request.session.modified = True
+                request.session.save()
 
-            username = request.POST['username']
-            request.session['signup_info']['username'] = username
+            if "signup_info" in request.session:
+                myFile = request.FILES.get('profile-picture')
+                fs = FileSystemStorage(location='temp/')
+                filename = fs.save(myFile.name, myFile)
 
-            email = request.POST["email"]
+                username = request.POST['username']
+                request.session['signup_info']['username'] = username
 
-            sp.table("Users").insert({"username": username, "email": email,
-                                      "profile_picture_url": fs.path(filename)}).execute()
+                email = request.POST["email"]
+                request.session['signup_info']['email'] = email
 
-            KyberPrivateKey, KyberPublicKey = generateKeyPair()
-            DilithiumPrivateKey, DilithiumPublicKey = DilithiumAPI().getPairKey()
+                kyberPrivateKey, kyberPublicKey = KyberAPI().generateKeyPair()
+                plainSharedSecret, encapsulatedSharedSecret = KyberAPI().encapsulateSecret(kyberPublicKey)
+                dilithiumPrivateKey, dilithiumPublicKey = DilithiumAPI().getPairKey()
 
-            addEmailToQueue(email, {"kyberPublicKey": KyberPublicKey, "dilithiumPublicKey": DilithiumPublicKey, "homomorphicPublicKey": homomorphicPublicKey})
-            return redirect("signup_step", 2)
-        elif step == 2:
+                try:
+                    unpackedData = getUnpackedData()
 
-            sp.table("Users").update({"kyber_public_key": request.POST["kyber_public_key"], "dilithium_public_key":request.POST["dilithium_public_key"]}).execute()
-            return redirect("signup_step", 3)
-        elif step == 3:
-            if QRCodeGenerator.verifyCode(request.session['secret'], request.session['code']):
-                return redirect("home")
+                    unpackedData[f"server-{username}-kyberPublicKey"] = toBase64(kyberPublicKey)
+                    unpackedData[f"server-{username}-kyberPrivateKey"] = toBase64(kyberPrivateKey)
+                    unpackedData[f"server-{username}-dilithiumPublicKey"] = dilithiumPublicKey
+                    unpackedData[f"server-{username}-dilithiumPrivateKey"] = dilithiumPrivateKey
+                    unpackedData[f"server-{username}-encapsulatedSharedSecret"] = toBase64(encapsulatedSharedSecret)
+
+                    packed_data = msgpack.packb(unpackedData, use_bin_type=True)
+
+                    with open('data.msgpack', 'wb') as file:
+                        file.write(packed_data)
+
+                    sp.table("Users").insert({"id": str(uuid.uuid4()), "username": username, "email": email,
+                                              "profile_picture_url": fs.path(filename)}).execute()
+                except Exception as e:
+                    print("ERROR: " + str(e))
+
+                kyber_hasher = SHA3_512.new()
+                kyber_hasher.update(
+                    toBase64(kyberPublicKey).encode())
+                kyberPublicKeyHash = kyber_hasher.hexdigest()
+
+                dilithium_hasher = SHA3_512.new()
+                dilithium_hasher.update(
+                    dilithiumPublicKey.encode())
+                dilithiumPublicKeyHash = dilithium_hasher.hexdigest()
+
+                addEmailToQueue({"kyberPublicKeyHash": kyberPublicKeyHash,
+                                 "dilithiumPublicKeyHash": dilithiumPublicKeyHash, "receiverEmail": email,
+                                 "username": username
+                                 })
+
+                return redirect("signup_step", 2)
             else:
-                return JsonResponse({'isOtpCorrect': False})
+                return HttpResponse("Couldn't find the data sent")
+        elif step == 2:
+            username = request.session["signup_info"]["username"]
+            kyberPublicKeyHashInput = request.POST["kyber-public-key-signature"]
+            dilithiumPublicKeyHashInput = request.POST["dilithium-public-key-signature"]
+
+            unpackedData = getUnpackedData()
+
+            kyberPublicKey = unpackedData[f"server-{username}-kyberPublicKey"]
+            dilithiumPublicKey = unpackedData[f"server-{username}-dilithiumPublicKey"]
+
+            kyber_hasher = SHA3_512.new()
+            kyber_hasher.update(
+                kyberPublicKey.encode())
+            kyberPublicKeyHash = kyber_hasher.hexdigest()
+
+            dilithium_hasher = SHA3_512.new()
+            dilithium_hasher.update(
+                dilithiumPublicKey.encode())
+            dilithiumPublicKeyHash = dilithium_hasher.hexdigest()
+
+            if dilithiumPublicKeyHash == dilithiumPublicKeyHashInput and kyberPublicKeyHash == kyberPublicKeyHashInput:
+                return redirect("signup_step", 3)
+            else:
+                return JsonResponse({'areHashesValid': False})
+        elif step == 3:
+            username = request.session["signup_info"]["username"]
+            formData = json.loads(request.body.decode('utf-8'))
+
+            data, count = sp.table("Users").select("totp_secret").eq("username", username).execute()
+            encryptedTotpSecret = data[1][0]["totp_secret"]
+            unpackedData = getUnpackedData()
+
+            kyberPrivateKey = bytes_to_int_list(fromBase64(unpackedData[f"server-{username}-kyberPrivateKey"]))
+            encapsulatedSharedSecret = bytes_to_int_list(
+                fromBase64(unpackedData[f"server-{username}-encapsulatedSharedSecret"]))
+
+            plainSharedSecret = kem_decaps1024(kyberPrivateKey, encapsulatedSharedSecret)
+            decryptedTotpSecret = KyberAPI().decrypt_data(plainSharedSecret, encryptedTotpSecret)
+
+            encryptedTotpCode = formData['totp']
+            decryptedTotpCode = KyberAPI().decrypt_data(plainSharedSecret, encryptedTotpCode)
+
+            is_valid = QRCodeGenerator.verifyCode(decryptedTotpSecret, decryptedTotpCode)
+            return JsonResponse({'isTotpCorrect': is_valid})
     else:
+        if step > 1:
+            username = request.session.get('signup_info', {}).get('username')
+            unpackedData = getUnpackedData()
+
+            print(unpackedData[f"server-{username}-kyberPublicKey"])
+            print(f"\n{unpackedData[f'server-{username}-dilithiumPublicKey']}")
+            context = {
+                'step': step,
+                'kyberPublicKey': unpackedData[f"server-{username}-kyberPublicKey"],
+                'dilithiumPublicKey': unpackedData[f"server-{username}-dilithiumPublicKey"]
+            }
+        else:
+            context = {'step': step}
+
         return render(request, "signup.html", context)
+
 
 @require_GET
 def generate_qr_code(request):
-    return HttpResponse(QRCodeGenerator.generate_qr_code(), content_type='image/png')
+    username = request.session["signup_info"]["username"]
+    secret = QRCodeGenerator.generate_totp_secret()
 
+    unpackedData = getUnpackedData()
+    kyberPrivateKey = list(fromBase64(unpackedData[f"server-{username}-kyberPrivateKey"]))
+    encapsulatedSharedSecret = list(fromBase64(unpackedData[f"server-{username}-encapsulatedSharedSecret"]))
+    plainSharedSecret = kem_decaps1024(kyberPrivateKey, encapsulatedSharedSecret)
 
-# @require_POST
-# def verify_code(request):
-#     return HttpResponse(QRCodeGenerator.verifyCode(secret, code))
+    # Ensure plainSharedSecret is bytes before encrypting
+    plainSharedSecret = bytes([(x % 256) for x in plainSharedSecret])
+    encryptedTotpSecret = KyberAPI().encrypt_data(plainSharedSecret, bytes(secret.encode('utf-8')))
+
+    sp.table("Users").update({"totp_secret": toBase64(encryptedTotpSecret)}).eq("username",
+                                                                                request.session.get('signup_info',
+                                                                                                    {}).get(
+                                                                                    'username')).execute()
+    return HttpResponse(QRCodeGenerator.generate_qr_code("Safivote", secret), content_type='image/png')

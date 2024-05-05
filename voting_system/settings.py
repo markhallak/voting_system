@@ -6,11 +6,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATE_DIR = BASE_DIR / "templates"
 
-SECRET_KEY = get_random_secret_key()
+SECRET_KEY = "HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO0000000"
 
-SUPABASE_URL = "https://opskdmutoyxkdvrzdioc.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wc2tkbXV0b3l4a2R2cnpkaW9jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwNDk0MTYzNSwiZXhwIjoyMDIwNTE3NjM1fQ.9x9VKXvJJB9tzbZZvS0fDEU1QDIqmv6iBiuTJnEYu3k"
-
+SUPABASE_URL = "https://jcwnokxvbkycbzbgnfvt.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjd25va3h2Ymt5Y2J6YmduZnZ0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMjc3OTk0MCwiZXhwIjoyMDI4MzU1OTQwfQ.85x9-snCUe-h7YdnsreBIzXRIwvW9r5joXIAThj2iEE"
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -31,7 +30,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_user_agents.middleware.UserAgentMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware'
 ]
 
 ROOT_URLCONF = 'voting_system.urls'
@@ -92,27 +91,25 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# SESSION_COOKIE_SECURE = True
-#
-# SECURE_HSTS_SECONDS = 3600
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-#
-# SECURE_CONTENT_TYPE_NOSNIFF = True
+SESSION_COOKIE_SECURE = False
 
-# X_FRAME_OPTIONS = 'DENY'
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
-# SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = 'DENY'
 
-# SESSION_COOKIE_HTTPONLY = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
-# SESSION_COOKIE_AGE = 3600
+CSRF_COOKIE_SECURE = False
 
-# SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_HTTPONLY = False
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+SESSION_COOKIE_AGE = 3600
+SESSION_COOKIE_SAMESITE = "Strict"
+CSRF_COOKIE_SAMESITE = 'Strict'
 
-# USE_X_FORWARDED_HOST = True
+SECURE_SSL_REDIRECT = False
+USE_X_FORWARDED_HOST = True

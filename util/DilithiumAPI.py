@@ -6,7 +6,11 @@ class DilithiumAPI:
 
     def __init__(self):
         jvmPath = jpype.getDefaultJVMPath()
-        jpype.startJVM(jvmPath)
+
+        try:
+            jpype.startJVM(jvmPath)
+        except Exception as e:
+            print("ERROR: " + str(e))
 
         classpath1 = r"C:\Users\markh\eclipse-workspace3\CP\bin"
         jpype.addClassPath(classpath1)

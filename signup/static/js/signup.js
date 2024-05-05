@@ -1,6 +1,9 @@
+import * as jssha from 'https://cdn.jsdelivr.net/npm/jssha@3.3.1/+esm'
+import { Kyber1024 } from "https://cdn.jsdelivr.net/npm/crystals-kyber-js@1.1.1/+esm";
+
 document.addEventListener('DOMContentLoaded', function() {
     const usernameInput = document.getElementById('username-input');
-    const kyberPublicKeyInput = document.getElementById('kyber-public-key-input');
+    const kyberPublicKeySignatureInput = document.getElementById('kyber-public-key-signature-input');
     const totpInput = document.getElementById('totp-input');
     const csrfTokenElement = document.querySelector('.csrfToken');
 
@@ -98,27 +101,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 imageUpload.click();
             }
         });
-    } else if (kyberPublicKeyInput) {
-        const kyberPublicKeySignatureInput = document.getElementById('kyber-public-key-signature-input');
-        const dilithiumPublicKeyInput = document.getElementById('dilithium-public-key-input');
+    } else if (kyberPublicKeySignatureInput) {
         const dilithiumPublicKeySignatureInput = document.getElementById('dilithium-public-key-signature-input');
         const continueButton2 = document.getElementById('continue-step-2');
 
+        continueButton2.addEventListener('click', function(event) {
+            const form = document.querySelector("form");
+            event.preventDefault();
+
+            if (checkHashes()) {
+                form.submit();
+            } else {
+                console.log("Hash check failed.");
+            }
+        });
+
+        function checkHashes() {
+    try {
+        var kyberPublicKey = document.querySelector('meta[name="kyberPublicKey"]').getAttribute('content');
+        var dilithiumPublicKey = document.querySelector('meta[name="dilithiumPublicKey"]').getAttribute('content');
+        console.log(kyberPublicKey)
+        console.log(dilithiumPublicKey)
+
+        const kyberHasher = new jsSHA("SHA3-512", "TEXT");
+        kyberHasher.update(kyberPublicKey);
+        const kyberPublicKeyHash = kyberHasher.getHash("HEX");
+
+        // Dilithium key assumed to be plain text
+        const dilithiumHasher = new jsSHA("SHA3-512", "TEXT", { encoding: "UTF8" });
+        dilithiumHasher.update(dilithiumPublicKey);
+        const dilithiumPublicKeyHash = dilithiumHasher.getHash("HEX");
+
+        console.log(`Kyber Hash: ${kyberPublicKeyHash}, Expected: ${kyberPublicKeySignatureInput.value}`);
+        console.log(`Dilithium Hash: ${dilithiumPublicKeyHash}, Expected: ${dilithiumPublicKeySignatureInput.value}`);
+
+        const kyberMatches = kyberPublicKeyHash.toLowerCase() === kyberPublicKeySignatureInput.value.toLowerCase();
+        const dilithiumMatches = dilithiumPublicKeyHash.toLowerCase() === dilithiumPublicKeySignatureInput.value.toLowerCase();
+
+        console.log(`Kyber Matches: ${kyberMatches}, Dilithium Matches: ${dilithiumMatches}`);
+
+        return kyberMatches && dilithiumMatches;
+    } catch (error) {
+        console.error("Error in hash comparison: ", error);
+        return false;
+    }
+}
+
+
         function areStep2FieldsFilled() {
-            return kyberPublicKeyInput.value.trim() !== '' &&
-                kyberPublicKeySignatureInput.value.trim() !== '' &&
-                dilithiumPublicKeyInput.value.trim() !== '' &&
+            return kyberPublicKeySignatureInput.value.trim() !== '' &&
                 dilithiumPublicKeySignatureInput.value.trim() !== '';
         }
 
         function areStep2FieldsValid() {
-            return kyberPublicKeyInput.value.length >= 8 &&
-                kyberPublicKeySignatureInput.value.length >= 8 &&
-                dilithiumPublicKeyInput.value.length >= 8 &&
+            return kyberPublicKeySignatureInput.value.length >= 8 &&
                 dilithiumPublicKeySignatureInput.value.length >= 8;
         }
 
-        [kyberPublicKeyInput, kyberPublicKeySignatureInput, dilithiumPublicKeyInput, dilithiumPublicKeySignatureInput].forEach(input => {
+        [kyberPublicKeySignatureInput, dilithiumPublicKeySignatureInput].forEach(input => {
             input.addEventListener('input', function() {
                 updateContinueButtonStep2();
             });
@@ -133,11 +173,91 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
     } else if (totpInput) {
+        var kyberPublicKey = document.querySelector('meta[name="kyberPublicKey"]').getAttribute('content');
+
+async function encryptData(plainText, passphrase) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plainText);
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(passphrase),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey']
+    );
+    const key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-CBC', length: 256 },
+        false,
+        ['encrypt']
+    );
+    const iv = crypto.getRandomValues(new Uint8Array(16));
+    const encrypted = await crypto.subtle.encrypt(
+        { name: 'AES-CBC', iv },
+        key,
+        data
+    );
+    const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+    combined.set(salt, 0);
+    combined.set(iv, salt.length);
+    combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+    return window.btoa(String.fromCharCode(...combined));
+}
+
+
+
+        async function encrypt(plainText, sharedSecret) {
+            const encryptedResult = await encryptData(plainText, sharedSecret);
+            return encryptedResult;
+        }
+
         const qrCodeImage = document.getElementById("qr-code");
         const continueButton3 = document.getElementById("continue-step-3");
 
         totpInput.addEventListener('input', function() {
             updateContinueButtonStep3();
+        });
+
+        const form = document.querySelector("form");
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const keyBytes = Uint8Array.from(atob(kyberPublicKey), c => c.charCodeAt(0));
+            let encryptedTotp;
+            let tempEncapsulatedSharedSecret;
+// Now use keyBytes in the Kyber1024.encap() call
+const kyber = new Kyber1024();
+kyber.encap(keyBytes).then(([encapsulatedSharedSecret, plainSharedSecret]) => {
+    encryptedTotp = encrypt(totpInput.value, plainSharedSecret);
+    tempEncapsulatedSharedSecret = encapsulatedSharedSecret;
+    console.log(encapsulatedSharedSecret, plainSharedSecret);
+}).catch(error => {
+    console.error('Error during key encapsulation:', error);
+});
+
+            fetch('/signup/3/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfTokenElement.value
+                    },
+                    body: JSON.stringify({
+                        'totp': encryptedTotp,
+                        "encapsulatedSharedSecret": tempEncapsulatedSharedSecret
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isTotpCorrect) {
+                        window.location.href = "/";
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
         });
 
         fetchQRCode();
