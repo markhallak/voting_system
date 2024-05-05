@@ -292,7 +292,7 @@ def signup_step(request, step):
             decryptedTotpSecret = KyberAPI().decrypt_data(plainSharedSecret, encryptedTotpSecret)
 
             encryptedTotpCode = formData['totp']
-            decryptedTotpCode = KyberAPI().decrypt_data(plainSharedSecret, encryptedTotpCode)
+            decryptedTotpCode = KyberAPI().decryptDataJS(plainSharedSecret, base64.b64decode(encryptedTotpCode))
 
             is_valid = QRCodeGenerator.verifyCode(decryptedTotpSecret, decryptedTotpCode)
             return JsonResponse({'isTotpCorrect': is_valid})

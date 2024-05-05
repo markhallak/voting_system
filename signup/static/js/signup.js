@@ -127,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
         kyberHasher.update(kyberPublicKey);
         const kyberPublicKeyHash = kyberHasher.getHash("HEX");
 
-        // Dilithium key assumed to be plain text
         const dilithiumHasher = new jsSHA("SHA3-512", "TEXT", { encoding: "UTF8" });
         dilithiumHasher.update(dilithiumPublicKey);
         const dilithiumPublicKeyHash = dilithiumHasher.getHash("HEX");
@@ -228,7 +227,7 @@ async function encryptData(plainText, passphrase) {
             const keyBytes = Uint8Array.from(atob(kyberPublicKey), c => c.charCodeAt(0));
             let encryptedTotp;
             let tempEncapsulatedSharedSecret;
-// Now use keyBytes in the Kyber1024.encap() call
+
 const kyber = new Kyber1024();
 kyber.encap(keyBytes).then(([encapsulatedSharedSecret, plainSharedSecret]) => {
     encryptedTotp = encrypt(totpInput.value, plainSharedSecret);

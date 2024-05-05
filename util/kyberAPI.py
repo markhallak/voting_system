@@ -11,70 +11,74 @@ from util.kyber.ccakem import kem_keygen1024, kem_encaps1024, kem_decaps1024
 
 
 class KyberAPI:
-    from cryptography.hazmat.primitives import padding
-
-    def encrypt_data(self, plain_text, passphrase):
-        # Convert the passphrase to bytes
-        passphrase = passphrase.encode() if isinstance(passphrase, str) else passphrase
-
-        # Convert plain_text to bytes and pad it
-        padder = padding.PKCS7(128).padder()  # AES block size in bits
-        plain_text = plain_text.encode() if isinstance(plain_text, str) else plain_text
-        padded_data = padder.update(plain_text) + padder.finalize()
-
-        # Generate a random salt and IV
+    def encrypt_data(self, key, plaintext):
         salt = os.urandom(16)
-        iv = os.urandom(16)
-
-        # Derive a key from the passphrase
         kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
+            algorithm=hashes.SHA3_512(),
             length=32,
             salt=salt,
-            iterations=100000,
+            iterations=200000,
             backend=default_backend()
         )
-        key = kdf.derive(passphrase)
-
-        # Encrypt the padded data
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        aes_key = kdf.derive(key)
+        padder = padding.PKCS7(128).padder()
+        padded_data = padder.update(plaintext) + padder.finalize()
+        iv = os.urandom(16)
+        cipher = Cipher(algorithms.AES(aes_key), modes.CBC(iv), backend=default_backend())
         encryptor = cipher.encryptor()
         ct = encryptor.update(padded_data) + encryptor.finalize()
+        return salt + iv + ct
 
-        # Combine salt, iv, and ciphertext, then Base64 encode
-        encrypted = bytearray(salt + iv + ct)
-        return base64.b64encode(encrypted).decode('utf-8')
+    def decrypt_data(self, key, encrypted_data):
+        salt = encrypted_data[:16]
+        iv = encrypted_data[16:32]
+        ct = encrypted_data[32:]
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA3_512(),
+            length=32,
+            salt=salt,
+            iterations=200000,
+            backend=default_backend()
+        )
+        aes_key = kdf.derive(key)
+        cipher = Cipher(algorithms.AES(aes_key), modes.CBC(iv), backend=default_backend())
+        decryptor = cipher.decryptor()
+        padded_plaintext = decryptor.update(ct) + decryptor.finalize()
+        unpadder = padding.PKCS7(128).unpadder()
+        plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
+        return plaintext
 
-    def decrypt_data(self, passphrase, encrypted_data):
-        # Decode and prepare data
-        passphrase = passphrase.encode() if isinstance(passphrase, str) else passphrase
-        encrypted_data = base64.b64decode(encrypted_data)
+    def decryptDataJS(self, encrypted_data_b64, passphrase):
+        # Decode the base64 encoded data
+        encrypted_data = base64.b64decode(encrypted_data_b64)
 
-        # Extract salt, iv, and ciphertext
+        # Extract the salt, iv and ciphertext from the combined byte array
         salt = encrypted_data[:16]
         iv = encrypted_data[16:32]
         ciphertext = encrypted_data[32:]
 
-        # Derive key
+        # Derive the key using PBKDF2 HMAC with SHA-256
+        backend = default_backend()
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
             salt=salt,
             iterations=100000,
-            backend=default_backend()
+            backend=backend
         )
-        key = kdf.derive(passphrase)
+        key = kdf.derive(passphrase.encode())
 
-        # Decrypt and remove padding
-        # Decrypt the data
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        # Decrypt the ciphertext using AES-CBC
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
         decryptor = cipher.decryptor()
-        plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+        padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
 
-        try:
-            return plaintext.decode('utf-8')
-        except UnicodeDecodeError:  # Handle non-UTF8 plaintext
-            return plaintext
+        # Unpad the plaintext
+        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
+        plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
+
+        return plaintext.decode('utf-8')
+
     def generateKeyPair(self):
         return kem_keygen1024()
 
@@ -94,4 +98,4 @@ message = bytes("Hello, this is a secret message!".encode("utf-8"))
 encrypted_message = KyberAPI().encrypt_data(plainSharedSecret, message)
 print("Encrypted Message:", encrypted_message)
 decrypted_message = KyberAPI().decrypt_data(plainSharedSecret, encrypted_message)
-print("Decrypted Message:", decrypted_message.decode('utf-8'))
+print("Decrypted Message:", decrypted_message.decode("utf-8"))
