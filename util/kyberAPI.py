@@ -83,14 +83,14 @@ class KyberAPI:
         return plainSharedSecret, cipherSharedSecret
 
 
-private, public = KyberAPI().generateKeyPair()
-plainSharedSecret, encapsulatedSharedSecret = KyberAPI().encapsulateSecret(public)
-print(f"Plain Shared Secret: {plainSharedSecret}")
-print(f"Encapsulated Shared Secret: {encapsulatedSharedSecret}")
-print(f"Plain Shared Secret 2: {kem_decaps1024(private, encapsulatedSharedSecret)}")
-
-message = bytes("Hello, this is a secret message!".encode("utf-8"))
-encrypted_message = KyberAPI().encrypt_data(plainSharedSecret, message)
-print("Encrypted Message:", encrypted_message)
-decrypted_message = KyberAPI().decrypt_data(plainSharedSecret, encrypted_message)
-print("Decrypted Message:", decrypted_message.decode("utf-8"))
+# private, public = KyberAPI().generateKeyPair()
+# plainSharedSecret, encapsulatedSharedSecret = KyberAPI().encapsulateSecret(public)
+# print(f"Plain Shared Secret: {plainSharedSecret}")
+# print(f"Encapsulated Shared Secret: {encapsulatedSharedSecret}")
+# print(f"Plain Shared Secret 2: {kem_decaps1024(private, encapsulatedSharedSecret)}")
+#
+# message = bytes("Hello, this is a secret message!".encode("utf-8"))
+# encrypted_message = KyberAPI().encrypt_data(plainSharedSecret, message)
+# print("Encrypted Message:", encrypted_message)
+# decrypted_message = KyberAPI().decrypt_data(plainSharedSecret, encrypted_message)
+# print("Decrypted Message:", decrypted_message.decode("utf-8"))
